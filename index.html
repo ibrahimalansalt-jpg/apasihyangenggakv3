@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Album Kenangan — Vintage Scrapbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- simbol & filter SVG yang dipakai ulang -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="rose" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" fill="#4a1020"/><circle cx="50" cy="50" r="32" fill="#6e1a30"/>
+    <circle cx="50" cy="50" r="23" fill="#85223b"/><circle cx="50" cy="50" r="13" fill="#5a1426"/>
+    <path d="M50 18c18 2 30 17 26 33-4 14-20 21-33 13-12-8-10-25 3-30 10-4 19 3 15 11-3 6-11 6-13 1" fill="none" stroke="#2e0a14" stroke-width="3" stroke-linecap="round"/>
+    <path d="M22 34c-8 6-8 18 0 24M80 30c9 8 8 22-2 30" fill="none" stroke="#3b0c18" stroke-width="2" opacity=".6"/>
+  </symbol>
+  <symbol id="sprig" viewBox="0 0 200 60">
+    <path d="M4 44C60 36 120 32 196 12" stroke="#5b6b3a" stroke-width="2.5" fill="none"/>
+    <ellipse cx="40" cy="34" rx="16" ry="7" transform="rotate(-30 40 34)" fill="#6f8040"/>
+    <ellipse cx="72" cy="42" rx="16" ry="7" transform="rotate(25 72 42)" fill="#7d8f48"/>
+    <ellipse cx="104" cy="28" rx="16" ry="7" transform="rotate(-28 104 28)" fill="#6f8040"/>
+    <ellipse cx="136" cy="34" rx="16" ry="7" transform="rotate(22 136 34)" fill="#7d8f48"/>
+    <ellipse cx="168" cy="16" rx="14" ry="6" transform="rotate(-25 168 16)" fill="#6f8040"/>
+  </symbol>
+  <symbol id="shark" viewBox="0 0 120 48">
+    <path d="M2 5L20 22C40 12 70 12 96 20C108 22 116 25 118 27C108 31 98 34 84 35C60 40 40 36 22 30L2 46L14 26Z"/>
+    <path d="M52 14L62 -1L72 14Z"/><path d="M78 32L70 47L90 36Z"/>
+  </symbol>
+  <symbol id="fish" viewBox="0 0 20 12">
+    <g transform="translate(20 0) scale(-1 1)"><path d="M0 6Q8-1 14 6Q8 13 0 6ZM13 6L20 0V12Z"/></g>
+  </symbol>
+  <!-- riak air untuk foto latar Hana -->
+  <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="3" result="n">
+      <animate attributeName="baseFrequency" dur="16s" values="0.012 0.02;0.02 0.012;0.012 0.02" repeatCount="indefinite"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<!-- properti di atas meja -->
+<div class="prop bk bk1"></div>
+<div class="prop bk bk2"></div>
+<div class="prop pen"></div>
+<div class="prop r1"><svg><use href="#rose"/></svg></div>
+<div class="prop r2"><svg><use href="#rose"/></svg></div>
+
+<!-- buku -->
+<div class="scene" id="scene">
+  <div class="book" id="book" data-state="0">
+    <div class="board l leather"></div><div class="board r leather"></div>
+    <div class="stack l"></div><div class="stack r"></div>
+    <div class="pages" id="pages"></div>
+  </div>
+</div>
+
+<!-- navigasi -->
+<nav class="bar">
+  <button id="prev" aria-label="Halaman sebelumnya">◀</button>
+  <button id="tocb">☰ Daftar Isi</button>
+  <span id="lbl">Sampul</span>
+  <button id="addp" class="add" title="Tambah satu lembar (2 halaman) pada album yang sedang dibuka">＋ Halaman</button>
+  <button id="delp" title="Hapus lembar tambahan terakhir di album ini">－</button>
+  <button id="nxt" aria-label="Halaman berikutnya">▶</button>
+</nav>
+
+<!-- hologram (muncul di atas buku saat foto/video pop-up dinyalakan) -->
+<div id="holo" hidden>
+  <div class="hb"></div>
+  <div class="hbase"></div>
+  <div class="hs">
+    <div class="hm"></div>
+    <button class="hx" aria-label="Matikan hologram">✕</button>
+    <div class="hcap"></div>
+  </div>
+</div>
+
+<div id="lb"></div>
+<div id="toast"></div>
+<div class="rot">📖 Putar ponsel ke mode landscape<br>agar buku terbuka dengan nyaman.</div>
+
+<script src="script.js"></script>
+</body>
+</html>

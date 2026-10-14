@@ -1,0 +1,498 @@
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pw:min(46vw,62vh);              /* lebar satu halaman */
+  --ph:calc(var(--pw)*1.38);        /* tinggi halaman */
+  --serif:'IM Fell English','Georgia','Times New Roman',serif;
+  --sc:'IM Fell English SC','Georgia',serif;
+  --hand:'Caveat','Segoe Script','Bradley Hand',cursive;
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .08 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .55' numOctaves='4' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .05 0 0 0 0 .02 0 0 0 .75 0'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23w)'/%3E%3C/svg%3E");
+}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  font-family:var(--serif);color:#3a2416;user-select:none;
+  background:
+    radial-gradient(ellipse at 50% 45%,rgba(255,190,110,.30),transparent 55%),
+    radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.85) 100%),
+    var(--grain),
+    repeating-linear-gradient(0deg,transparent 0 24vh,rgba(0,0,0,.55) 24vh calc(24vh + 3px)),
+    linear-gradient(180deg,#43270f,#2c1809 50%,#42260f);
+}
+
+/* ===== properti di atas meja ===== */
+.prop{position:fixed;pointer-events:none;z-index:0}
+.prop.bk{width:26vw;height:9vw;border-radius:.6vw;
+  background:var(--noise),linear-gradient(135deg,#5a2f15,#3a1d0a);background-blend-mode:overlay,normal;
+  box-shadow:0 1.2vw 2.5vw rgba(0,0,0,.8),inset 0 0 2vw rgba(0,0,0,.6)}
+.prop.bk::after{content:"";position:absolute;right:.5vw;top:.9vw;bottom:.9vw;width:1.6vw;
+  background:repeating-linear-gradient(0deg,#e5d3a8 0 1px,#bda46c 1px 3px)}
+.prop.bk1{right:-7vw;top:4vh;transform:rotate(-16deg)}
+.prop.bk2{left:-9vw;bottom:6vh;transform:rotate(12deg);width:30vw}
+.prop.pen{right:2vw;bottom:5vh;width:16vw;height:.7vw;border-radius:1vw;transform:rotate(-24deg);
+  background:linear-gradient(#222,#000 50%,#333);box-shadow:0 .8vw 1vw rgba(0,0,0,.7)}
+.prop.pen::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3vw;background:linear-gradient(#d4a860,#8b5a2b)}
+.prop svg{width:100%;height:100%}
+.prop.r1{width:7vw;height:7vw;left:1vw;top:5vh;transform:rotate(25deg);filter:drop-shadow(0 .5vw .6vw rgba(0,0,0,.7))}
+.prop.r2{width:5vw;height:5vw;right:3vw;bottom:22vh;transform:rotate(-40deg);filter:drop-shadow(0 .5vw .6vw rgba(0,0,0,.7))}
+
+/* ===== buku ===== */
+.scene{position:fixed;inset:0;display:grid;place-items:center;z-index:2;padding-bottom:5vh}
+.book{
+  position:relative;width:calc(var(--pw)*2);height:var(--ph);
+  font-size:calc(var(--pw)/32);
+  transform:translateX(var(--sx,0));
+  transition:transform 1.2s cubic-bezier(.6,.05,.3,1);
+  --tl:0em;--tr:2.4em;
+}
+.book[data-state="0"]{--sx:calc(var(--pw)*-.5)}
+.book[data-state="end"]{--sx:calc(var(--pw)*.5)}
+.leather{background:var(--noise),linear-gradient(135deg,#6b3a18 0%,#4a2410 35%,#3a1d0a 65%,#5a2f15 100%);background-blend-mode:overlay,normal}
+.board{position:absolute;top:-.8em;bottom:-.8em;z-index:0;transition:opacity 1s;
+  box-shadow:0 2em 4em rgba(0,0,0,.75),0 .5em 1.2em rgba(0,0,0,.6),inset 0 0 3em rgba(0,0,0,.6)}
+.board.l{left:-.8em;width:calc(50% + .8em);border-radius:.8em 0 0 .8em}
+.board.r{right:-.8em;width:calc(50% + .8em);border-radius:0 .8em .8em 0}
+.book[data-state="0"] .board,.book[data-state="end"] .board{opacity:0}
+.stack{position:absolute;top:.35em;bottom:.35em;z-index:1;transition:width 1.2s,opacity .6s;
+  background:repeating-linear-gradient(90deg,#e3d0a0 0 1px,#b39a60 1px 3px)}
+.stack.l{right:50%;width:calc(50% + var(--tl))}
+.stack.r{left:50%;width:calc(50% + var(--tr))}
+.book[data-state="0"] .stack.l,.book[data-state="end"] .stack.r{opacity:0}
+.pages{position:absolute;inset:0;z-index:2;perspective:calc(var(--pw)*3.4);perspective-origin:50% 40%}
+.leaf{position:absolute;left:50%;top:0;width:50%;height:100%;transform-origin:left center;transform-style:preserve-3d}
+.cast{position:absolute;top:0;bottom:0;width:50%;opacity:0;pointer-events:none;z-index:60}
+.cast.l{left:0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.55))}
+.cast.r{left:50%;background:linear-gradient(270deg,transparent,rgba(0,0,0,.55))}
+
+/* ===== muka halaman ===== */
+.face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;color:#3a2416;font-family:var(--serif)}
+.face.back{transform:rotateY(180deg)}
+.face.r{border-radius:0 .5em .5em 0}
+.face.l{border-radius:.5em 0 0 .5em}
+.face::before{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(60,30,8,.38) 100%)}
+.face::after{content:"";position:absolute;top:0;bottom:0;width:14%;z-index:9;pointer-events:none}
+.face.r::after{left:0;background:linear-gradient(90deg,rgba(20,8,0,.55),rgba(20,8,0,.15) 45%,transparent)}
+.face.l::after{right:0;background:linear-gradient(270deg,rgba(20,8,0,.55),rgba(20,8,0,.15) 45%,transparent)}
+.shade{position:absolute;inset:0;z-index:20;opacity:0;pointer-events:none}
+.r .shade{background:linear-gradient(90deg,rgba(0,0,0,.85),transparent 85%)}
+.l .shade{background:linear-gradient(270deg,rgba(0,0,0,.85),transparent 85%)}
+.paper{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(160,116,60,.2),transparent 28%),
+    radial-gradient(circle at 85% 78%,rgba(140,90,40,.16),transparent 32%),
+    repeating-linear-gradient(0deg,transparent 0 .85em,rgba(90,60,30,.045) .85em 1em),
+    var(--noise),
+    linear-gradient(135deg,#f0e2c4,#e5d3a8 50%,#d4be88);
+  background-blend-mode:normal,normal,normal,multiply,normal;
+}
+.fx{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.inner{position:absolute;inset:0;padding:3em;display:flex;flex-direction:column;z-index:3}
+.r .inner{padding-left:3.8em}.l .inner{padding-right:3.8em}
+.inner.center{justify-content:center;align-items:center;text-align:center;gap:.5em}
+.ttl{font-family:var(--sc);font-weight:400;font-size:2.3em;text-align:center;letter-spacing:.14em;
+  color:var(--ink,#5a3216);text-shadow:0 0 .7em var(--glow,transparent),1px 1px 0 rgba(217,192,138,.7)}
+.paper .ttl{border-bottom:2px solid #a0743c;padding-bottom:.3em}
+.orn{text-align:center;font-size:1.4em;letter-spacing:.6em;color:var(--glow,#8b5a2b);margin:.5em 0}
+.story{font-family:var(--hand);font-size:1.5em;line-height:1.5;text-align:justify;color:var(--ink,#4a2f1a);outline:none;margin-top:.6em}
+.cap{font-style:italic;font-size:1.15em;color:var(--ink,#6b3f1d);outline:none;max-width:90%}
+.stamp{font-family:var(--sc);font-size:.85em;letter-spacing:.35em;border:1px solid currentColor;padding:.3em .9em;color:var(--ink);opacity:.85}
+.mini{font-family:var(--sc);font-weight:400;font-size:1.15em;text-align:center;letter-spacing:.2em;color:var(--ink,#5a3216);margin-bottom:.7em;opacity:.9}
+.pn{text-align:center;font-family:var(--serif);font-style:italic;font-size:.9em;margin-top:.6em;color:var(--ink,#6b3f1d);opacity:.8}
+[contenteditable]:focus{background:rgba(255,255,255,.12);border-radius:.3em}
+.toc{list-style:none;margin-top:1.4em;display:flex;flex-direction:column;gap:.55em;flex:1;justify-content:center}
+.toc li{display:flex;justify-content:space-between;padding:.6em 1em;font-family:var(--sc);letter-spacing:.1em;font-size:1.15em;
+  background:rgba(160,116,60,.16);border-left:.25em solid #8b5a2b;border-radius:.2em;cursor:pointer;transition:.3s}
+.toc li:hover{background:rgba(160,116,60,.36);transform:translateX(.4em)}
+.deco{position:absolute;pointer-events:none;z-index:2;filter:drop-shadow(0 .15em .2em rgba(0,0,0,.45))}
+.deco.a{width:5em;height:5em;right:1.4em;top:1.2em;transform:rotate(18deg)}
+.deco.b{width:4em;height:4em;left:1.2em;bottom:2.2em;transform:rotate(-30deg)}
+.deco.s{width:9em;height:2.7em;left:1.5em;top:1.4em;transform:rotate(-8deg)}
+.tape{position:absolute;width:5em;height:1.5em;z-index:4;background:linear-gradient(135deg,rgba(230,210,160,.85),rgba(200,170,110,.85));box-shadow:0 1px 3px rgba(0,0,0,.3)}
+
+/* ===== sudut halaman (klik untuk balik) ===== */
+.corner{position:absolute;bottom:0;width:3em;height:3em;border:0;padding:0;cursor:pointer;z-index:30;transition:width .35s,height .35s}
+.face.r .corner{right:0;background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.28) 50%,#cfb77f 53%,#f4e7c4);box-shadow:-.3em -.3em .7em rgba(0,0,0,.25)}
+.face.l .corner{left:0;background:linear-gradient(225deg,transparent 50%,rgba(0,0,0,.28) 50%,#cfb77f 53%,#f4e7c4);box-shadow:.3em -.3em .7em rgba(0,0,0,.25)}
+.corner:hover{width:5em;height:5em}
+
+/* ===== sampul kulit ===== */
+.face.cover{cursor:pointer;color:#f0d9a0}
+.face.cover::before{background:radial-gradient(ellipse at center,rgba(255,200,120,.12),transparent 50%,rgba(0,0,0,.55) 100%)}
+.cover .spine{position:absolute;top:0;bottom:0;width:3.6em;z-index:5;
+  background:linear-gradient(90deg,#2a1408,#4a2410 40%,#6b3a18 70%,#3a1d0a);box-shadow:inset -.6em 0 1.2em rgba(0,0,0,.7)}
+.r.cover .spine{left:0}
+.l.cover .spine{right:0;transform:scaleX(-1)}
+.cover .spine::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 8%,#b8894a 8.5%,#d4a860 9.5%,#8b5a2b 10.5%,transparent 11%,
+  transparent 33%,#b8894a 33.5%,#d4a860 34.5%,#8b5a2b 35.5%,transparent 36%,
+  transparent 58%,#b8894a 58.5%,#d4a860 59.5%,#8b5a2b 60.5%,transparent 61%,
+  transparent 83%,#b8894a 83.5%,#d4a860 84.5%,#8b5a2b 85.5%,transparent 86%)}
+.cover .frame{position:absolute;inset:1em;z-index:3;border:2px solid #b8894a;border-radius:.4em;
+  box-shadow:inset 0 0 0 .3em #4a2410,inset 0 0 0 .4em #b8894a,inset 0 0 0 .7em #2a1408,inset 0 0 3em rgba(0,0,0,.7)}
+.r.cover .frame{left:4.6em}.l.cover .frame{right:4.6em}
+.cn{position:absolute;width:3.4em;height:3.4em;z-index:6;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:1.5em;
+  border:2px solid #d4a860;color:#f0d9a0;text-shadow:0 0 .5em #b8894a;filter:drop-shadow(0 0 .3em rgba(212,168,96,.7));
+  background:radial-gradient(circle at 35% 35%,#6b3a18,#2a1408)}
+.cn.tl{top:1.4em;border-radius:.4em 1.6em .4em .4em}.cn.tr{top:1.4em;border-radius:1.6em .4em .4em .4em}
+.cn.bl{bottom:1.4em;border-radius:.4em .4em .4em 1.6em}.cn.br{bottom:1.4em;border-radius:.4em .4em 1.6em .4em}
+.r.cover .cn.tl,.r.cover .cn.bl{left:5.2em}.r.cover .cn.tr,.r.cover .cn.br{right:1.4em}
+.l.cover .cn.tl,.l.cover .cn.bl{left:1.4em}.l.cover .cn.tr,.l.cover .cn.br{right:5.2em}
+.plate{position:absolute;z-index:6;left:50%;top:46%;transform:translate(-50%,-50%);width:70%;text-align:center;padding:2.4em 1em;
+  border:1px solid rgba(212,168,96,.7);background:rgba(20,8,0,.35);box-shadow:inset 0 0 2em rgba(0,0,0,.55)}
+.r.cover .plate{left:55%}.l.cover .plate{left:45%}
+.plate h1{font-family:var(--sc);font-weight:400;font-size:3.1em;line-height:1.1;letter-spacing:.14em;
+  background:linear-gradient(180deg,#fff0bf,#d4a860 45%,#8b5a2b);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 .06em .06em rgba(0,0,0,.8))}
+.plate .sub{font-style:italic;letter-spacing:.3em;font-size:1em;color:#d4b878}
+.plate .orn{color:#d4a860;animation:pulse 3s ease-in-out infinite alternate}
+.open{position:absolute;z-index:6;bottom:4.2em;left:0;right:0;text-align:center;font-style:italic;letter-spacing:.2em;font-size:1em;color:#e9cf93;animation:blink 2.4s ease-in-out infinite}
+.r.cover .open{left:4.6em}
+@keyframes blink{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* ===== kartu foto ===== */
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.1em;padding:.5em}
+.photo-card{position:relative;background:#fdfbf5;padding:.45em .45em 1.7em;border-radius:2px;display:flex;flex-direction:column;min-height:0;min-width:0;
+  box-shadow:0 .3em .8em rgba(0,0,0,.4),0 .1em .3em rgba(0,0,0,.25);transition:transform .4s,box-shadow .4s}
+.photo-card:nth-child(1){transform:rotate(-2deg)}.photo-card:nth-child(2){transform:rotate(1.8deg)}
+.photo-card:nth-child(3){transform:rotate(1.4deg)}.photo-card:nth-child(4){transform:rotate(-1.8deg)}
+.photo-card:hover{transform:rotate(0) scale(1.04);z-index:10;box-shadow:0 .8em 1.8em rgba(0,0,0,.55),0 0 2em rgba(212,168,96,.4)}
+.photo-card::before{content:"";position:absolute;top:-.55em;left:50%;width:3.6em;height:1.1em;transform:translateX(-50%) rotate(-3deg);z-index:3;
+  background:linear-gradient(135deg,rgba(230,210,160,.88),rgba(200,170,110,.88));box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.photo-img{flex:1;min-height:0;position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#8b7355,#6b5540 50%,#4a3828)}
+.photo-img .ph{display:flex;flex-direction:column;align-items:center;gap:.3em;font-size:2.2em;color:rgba(255,255,255,.55);text-shadow:2px 2px 6px rgba(0,0,0,.6)}
+.photo-img .ph small{font-size:.32em;letter-spacing:.12em;font-family:var(--serif)}
+.photo-img img,.photo-img video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:sepia(.25) contrast(1.05)}
+.photo-img::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(60,30,10,.5))}
+.photo-img.has-media .ph{display:none}
+.photo-card .x,.photo-card .sw{position:absolute;top:.2em;width:1.7em;height:1.7em;border:0;border-radius:50%;color:#fff;font-size:.8em;cursor:pointer;z-index:6;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.photo-card .x{right:.2em;background:rgba(200,50,50,.92)}
+.photo-card .sw{right:2.2em;background:rgba(60,110,170,.92)}
+.photo-card.has-media .x,.photo-card.has-media .sw{display:flex}
+.photo-caption{position:absolute;left:.5em;right:.5em;bottom:.2em;text-align:center;font-family:var(--hand);font-size:1.15em;line-height:1.1;color:#5a3a20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;outline:none}
+
+/* ===== tema per album ===== */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinr{to{transform:rotate(-360deg)}}
+@keyframes pulse{from{opacity:.55;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
+@keyframes twinkle{0%,100%{opacity:.08;transform:scale(.5)}50%{opacity:1;transform:scale(1)}}
+@keyframes riseP{from{transform:translate3d(0,0,0) rotate(0)}to{transform:translate3d(var(--dx,0),calc(var(--ph)*-1.2),0) rotate(var(--rot,0deg))}}
+@keyframes fallP{from{transform:translate3d(0,0,0) rotate(0)}to{transform:translate3d(var(--dx,0),calc(var(--ph)*1.2),0) rotate(var(--rot,360deg))}}
+@keyframes swayX{0%,100%{translate:-.9em 0}50%{translate:.9em 0}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-.9em)}}
+@keyframes drift{from{translate:0 0}to{translate:3em -2em}}
+@keyframes streak{from{transform:translateX(0)}to{transform:translateX(calc(var(--pw)*1.6))}}
+@keyframes streakL{from{transform:translateX(0)}to{transform:translateX(calc(var(--pw)*-1.6))}}
+@keyframes swim{from{transform:translateX(-130%)}to{transform:translateX(calc(var(--pw)*1.15))}}
+@keyframes bob{from{translate:0 -1em}to{translate:0 1em}}
+@keyframes wv{to{transform:translateX(-50%)}}
+@keyframes kb{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.2) translate(-3%,-3%)}}
+@keyframes swing{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@keyframes blinkA{0%,100%{opacity:1}50%{opacity:.1}}
+
+.face:not(.live) *,.face:not(.live) *::before,.face:not(.live) *::after{animation-play-state:paused!important}
+
+/* partikel generik */
+.p{position:absolute;left:var(--x);width:var(--s);height:var(--s);opacity:var(--o,1);pointer-events:none}
+.p.up{bottom:-9%;animation:riseP var(--t) linear var(--d) infinite,swayX var(--w,4s) ease-in-out var(--d) infinite}
+.p.dn{top:-9%;animation:fallP var(--t) linear var(--d) infinite,swayX var(--w,4s) ease-in-out var(--d) infinite}
+.p.g{width:auto;height:auto;font-size:calc(var(--s)*2.4);line-height:1}
+.star{top:var(--y);border-radius:50%;background:#fff;animation:twinkle var(--t) ease-in-out var(--d) infinite}
+
+/* lapisan latar */
+.bgimg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;animation:kb 28s ease-in-out infinite alternate}
+.bgimg.blur{inset:-8%;filter:blur(.7em) brightness(.72) saturate(1.3)}
+.bgimg.soft{inset:-4%;filter:brightness(.85) saturate(1.1)}
+.bgimg.still{animation:none}
+.bgv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:none}
+.has-v .bgv{display:block}.has-v .bgimg{display:none}
+.tint{position:absolute;inset:0;z-index:1;pointer-events:none}
+.veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.04) 32%,rgba(0,0,0,.62) 100%)}
+.veil.lt{background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.3))}
+.tint.sea{background:linear-gradient(180deg,rgba(10,70,180,.65),rgba(2,20,90,.75));mix-blend-mode:color}
+.fx{z-index:2}
+.album .ttl{font-size:3.1em;letter-spacing:.2em;border:0;text-shadow:0 0 .55em var(--glow),0 .08em .3em #000,0 0 1.2em rgba(0,0,0,.6)}
+.album .stamp,.album .pn,.album .mini,.album .cap{text-shadow:0 .05em .3em #000}
+.album .cap{font-size:1.2em;color:var(--ink)}
+.album .orn{margin:.3em 0}
+.glass{background:var(--panel,rgba(0,0,0,.5));border:1px solid rgba(255,255,255,.2);border-radius:.6em;padding:.7em 1em;font-size:1.3em;line-height:1.4;text-align:center;box-shadow:0 .4em 1.2em rgba(0,0,0,.4);color:var(--ink)}
+.portrait{width:10.5em;height:10.5em;border-radius:50%;background-size:cover;background-position:50% 30%;border:.3em solid rgba(220,240,255,.85);box-shadow:0 0 2em var(--glow),inset 0 0 1.2em rgba(0,0,40,.5);animation:floaty 6s ease-in-out infinite}
+.bgctl{position:absolute;left:1em;bottom:.9em;z-index:12;display:flex;gap:.4em}
+.bgctl button{width:2em;height:2em;border-radius:50%;border:1px solid rgba(255,255,255,.55);background:rgba(0,0,0,.5);color:#fff;font-size:.9em;cursor:pointer;opacity:.55;transition:.2s}
+.bgctl button:hover{opacity:1}
+
+/* ---------- IBRA : galaxy hitam-putih-abu ---------- */
+.t-ibra{background:radial-gradient(ellipse at 30% 20%,#2b2b2b,#0c0c0c 55%,#000);--ink:#f2f2f2;--glow:#d0d0d0;--panel:rgba(10,10,10,.6)}
+@keyframes galspin{from{transform:rotateX(62deg) rotateZ(0)}to{transform:rotateX(62deg) rotateZ(360deg)}}
+.gal{position:absolute;left:50%;width:42em;height:42em;margin:-21em 0 0 -21em;border-radius:50%;filter:blur(.35em);
+  background:conic-gradient(transparent 0,rgba(255,255,255,.75) 7%,transparent 20%,rgba(170,170,170,.65) 34%,transparent 48%,rgba(255,255,255,.75) 57%,transparent 70%,rgba(140,140,140,.6) 84%,transparent 100%);
+  -webkit-mask:radial-gradient(circle,#000 0,rgba(0,0,0,.85) 20%,transparent 62%);mask:radial-gradient(circle,#000 0,rgba(0,0,0,.85) 20%,transparent 62%);animation:galspin 60s linear infinite}
+.gcore{position:absolute;left:50%;width:10em;height:10em;margin:-5em 0 0 -5em;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,255,255,.45) 25%,transparent 70%);animation:pulse 5s ease-in-out infinite alternate}
+.shoot{position:absolute;top:var(--y);left:var(--x);width:9em;height:1.5px;background:linear-gradient(90deg,transparent,#fff);transform:rotate(28deg);opacity:0;animation:shoot 6s linear var(--d) infinite}
+@keyframes shoot{0%{opacity:0;translate:0 0}3%{opacity:1}13%{opacity:0;translate:16em 9em}100%{opacity:0}}
+.planet{position:absolute;right:2.6em;top:3em;width:5.4em;height:5.4em;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#a0a0a0 45%,#2a2a2a 80%);box-shadow:inset -1em -.6em 1.4em rgba(0,0,0,.8),0 0 2em rgba(255,255,255,.2);animation:floaty 9s ease-in-out infinite}
+.planet::after{content:"";position:absolute;left:-60%;top:36%;width:220%;height:26%;border:.22em solid rgba(225,225,225,.7);border-radius:50%;transform:rotate(-18deg);box-shadow:0 0 .6em rgba(255,255,255,.4)}
+
+/* ---------- DZIO : basket putih-hitam-biru ---------- */
+.t-dzio{background:#050a18;--ink:#fff;--glow:#3b82f6;--panel:rgba(5,15,50,.6)}
+.i-dzio-f{filter:grayscale(1) contrast(1.12) brightness(.85)}
+.tint.blue{background:linear-gradient(180deg,rgba(25,80,255,.6),rgba(0,25,130,.7));mix-blend-mode:color}
+.beam{position:absolute;top:-8%;width:42%;height:115%;background:linear-gradient(180deg,rgba(255,255,255,.4),transparent 72%);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);transform-origin:50% 0;animation:beam 6s ease-in-out var(--d) infinite alternate;mix-blend-mode:screen}
+@keyframes beam{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.ball,.shotball{border-radius:50%;background:radial-gradient(circle at 35% 30%,#a9c4ff,#2c5be8 55%,#0a2380);box-shadow:inset -.3em -.3em .6em rgba(0,0,30,.55),0 0 1.2em rgba(60,120,255,.5);overflow:hidden}
+.ball{position:absolute;left:var(--x);bottom:var(--b,5%);width:var(--s);height:var(--s);animation:bounce var(--t) infinite var(--d)}
+.ball::before,.shotball::before{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(90deg,transparent 47.5%,rgba(5,15,60,.85) 47.5% 52.5%,transparent 52.5%),linear-gradient(0deg,transparent 47.5%,rgba(5,15,60,.85) 47.5% 52.5%,transparent 52.5%)}
+.ball::after,.shotball::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at -18% 50%,transparent 54%,rgba(5,15,60,.85) 55% 60%,transparent 61%),radial-gradient(circle at 118% 50%,transparent 54%,rgba(5,15,60,.85) 55% 60%,transparent 61%)}
+@keyframes bounce{0%,100%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.6,.4,1)}50%{transform:translateY(calc(var(--ph)*var(--h,-.45)));animation-timing-function:cubic-bezier(.6,0,.8,.4)}}
+.hoop{position:absolute;right:2.6em;top:2.4em;width:9em;height:11em;z-index:2}
+.hoop i{position:absolute;display:block}
+.hoop .bb{left:0;top:0;width:9em;height:5.8em;border:.25em solid #e8f0ff;background:rgba(255,255,255,.15);box-shadow:0 0 1.5em rgba(80,140,255,.65)}
+.hoop .sq{left:3em;top:2.6em;width:3em;height:2.2em;border:.2em solid #3b82f6}
+.hoop .rim{left:2.4em;top:4.8em;width:4.2em;height:1.1em;border:.25em solid #60a5fa;border-radius:50%;box-shadow:0 0 .8em #3b82f6}
+.hoop .net{left:2.8em;top:5.4em;width:3.4em;height:3.6em;transform-origin:50% 0;animation:swish 3.2s ease-in-out infinite;
+  background:repeating-linear-gradient(60deg,transparent 0 .5em,rgba(255,255,255,.75) .5em .6em),repeating-linear-gradient(-60deg,transparent 0 .5em,rgba(255,255,255,.75) .5em .6em);clip-path:polygon(0 0,100% 0,78% 100%,22% 100%)}
+@keyframes swish{0%,56%,100%{transform:scale(1,1)}62%{transform:scale(1.14,1.2)}72%{transform:scale(.93,.96)}82%{transform:scale(1.04,1.03)}}
+.hoop .shotball{left:3.1em;top:0;width:2.6em;height:2.6em;animation:shot 3.2s linear infinite}
+@keyframes shot{0%{translate:-14em 12em;opacity:0}6%{opacity:1}34%{translate:-5em -2.2em}54%{translate:-.4em 2.6em}60%{translate:0 4.05em}74%{translate:0 9em;opacity:1}86%{translate:0 13em;opacity:0}100%{translate:0 13em;opacity:0}}
+
+/* ---------- FARIS : green flag & romantis ---------- */
+.t-faris{background:linear-gradient(160deg,#04170a,#14532d 55%,#22703a);--ink:#f3fff3;--glow:#4ade80;--panel:rgba(6,40,18,.6)}
+.tint.rose{background:radial-gradient(circle at 50% 105%,rgba(255,110,170,.5),transparent 60%),radial-gradient(circle at 90% 0,rgba(255,200,220,.25),transparent 45%)}
+.grn{border-radius:0 100% 0 100%;height:calc(var(--s)*.55);background:linear-gradient(135deg,#bbf7d0,#16a34a)}
+.petal{border-radius:100% 0 100% 0;background:linear-gradient(135deg,#ffe4ef,#ff7aa8)}
+.heart{color:#ff8fb3;text-shadow:0 0 .5em #ff4d88}
+.fire{top:var(--y);border-radius:50%;background:#d9f99d;box-shadow:0 0 .8em #bef264;animation:twinkle var(--t) ease-in-out var(--d) infinite,drift 9s ease-in-out var(--d) infinite alternate}
+.flag{position:absolute;left:2.4em;top:2em;width:6em;height:6.5em;z-index:2}
+.flag .pole{position:absolute;left:0;top:0;width:.35em;height:100%;background:linear-gradient(90deg,#eee,#888);border-radius:.2em}
+.flag .cloth{position:absolute;left:.35em;top:.2em;width:5em;height:3em;background:linear-gradient(90deg,#15803d,#4ade80);transform-origin:0 50%;animation:wave 1.8s ease-in-out infinite;clip-path:polygon(0 0,100% 6%,90% 50%,100% 94%,0 100%);box-shadow:0 0 1em #4ade80}
+.flag .cloth::after{content:"✓";position:absolute;left:32%;top:14%;color:#eaffea;font-size:1.7em}
+@keyframes wave{0%,100%{transform:skewY(-6deg) scaleX(1)}50%{transform:skewY(6deg) scaleX(.92)}}
+
+/* ---------- RADIT : XSR hitam-abu-putih ---------- */
+.t-radit{background:linear-gradient(160deg,#111,#2b2b2b 60%,#0a0a0a);--ink:#f0f0f0;--glow:#d8d8d8;--panel:rgba(12,12,12,.62)}
+.i-radit-f{filter:grayscale(1) contrast(1.1)}
+.streak{position:absolute;top:var(--y);left:-30%;height:.13em;width:var(--w);background:linear-gradient(90deg,transparent,rgba(255,255,255,.85));animation:streak var(--t) linear var(--d) infinite}
+.scan{position:absolute;inset:0;background:linear-gradient(100deg,transparent 38%,rgba(255,255,255,.16) 50%,transparent 62%);background-size:250% 100%;animation:sheen 4.5s linear infinite}
+@keyframes sheen{from{background-position:150% 0}to{background-position:-150% 0}}
+.road{position:absolute;left:0;right:0;bottom:0;height:3.4em;background:linear-gradient(rgba(0,0,0,.2),#000 40%)}
+.road::before{content:"";position:absolute;left:0;right:0;top:58%;height:.24em;background:linear-gradient(90deg,#ddd 0 50%,transparent 50%) 0 0/6em 100% repeat-x;animation:roadmove .55s linear infinite}
+@keyframes roadmove{to{background-position:6em 0}}
+.bike{position:absolute;left:0;bottom:1.4em;z-index:2;width:13em;fill:#d0d0d0;animation:swim 9s linear infinite;filter:drop-shadow(0 0 .5em rgba(255,255,255,.35))}
+.bike .wh{transform-origin:center;transform-box:fill-box;animation:spin .35s linear infinite}
+.bike circle.tire{fill:none;stroke:#eee;stroke-width:4}
+.bike .sp{stroke:#bbb;stroke-width:1.5}
+
+/* ---------- RAMA : anime merah-hitam ---------- */
+.t-rama{background:radial-gradient(circle at 50% 30%,#8c1313,#4a0707 55%,#120000);--ink:#ffeaea;--glow:#ff2a2a;--panel:rgba(30,0,0,.6)}
+.beat{position:absolute;inset:0;background:radial-gradient(circle,transparent 35%,rgba(110,0,0,.75));animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.45;transform:scale(1)}18%{opacity:1;transform:scale(1.04)}30%{opacity:.55}42%{opacity:.95}}
+.wire{position:absolute;inset:0;width:100%;height:100%;animation:wsway 5s ease-in-out infinite alternate;transform-origin:50% 0}
+.wire path{stroke:#0a0a0a;stroke-width:2.6px;fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+@keyframes wsway{from{transform:rotate(-1.4deg) translateX(-.5em)}to{transform:rotate(1.4deg) translateX(.5em)}}
+.ember{border-radius:50%;background:#ff4a2f;box-shadow:0 0 .7em #ff1a1a,0 0 1.4em rgba(255,60,30,.7)}
+.ash{border-radius:40%;background:rgba(220,220,220,.55)}
+.t-rama .ttl{animation:glitch 3.4s steps(1) infinite}
+@keyframes glitch{0%,90%,100%{text-shadow:0 0 .55em #ff2a2a,0 .08em .3em #000}91%{text-shadow:-.06em 0 #ff2a2a,.06em 0 #fff,0 .08em .3em #000;transform:translateX(.05em)}93%{text-shadow:.07em 0 #ff2a2a,-.07em 0 #fff;transform:translateX(-.06em)}95%{text-shadow:0 0 .55em #ff2a2a;transform:none}}
+.mc{position:absolute;left:50%;top:50%;width:34em;height:34em;margin:-17em;opacity:.4;animation:spin 50s linear infinite}
+.mc *{fill:none;stroke:#ff3a3a;stroke-width:.5}
+
+/* ---------- ABI : bunga & gitar navy ---------- */
+.t-abi{background:linear-gradient(160deg,#040a24,#0b1d55 55%,#142a78);--ink:#e3ecff;--glow:#5b8cff;--panel:rgba(4,12,50,.62)}
+.tint.navy{background:linear-gradient(180deg,rgba(5,15,70,.35),rgba(2,8,40,.5))}
+.npetal{border-radius:100% 0 100% 0;height:calc(var(--s)*1.2);background:linear-gradient(135deg,#3b62d9,#0c1b5e 70%);box-shadow:0 0 .5em rgba(80,120,255,.5)}
+.note{color:#b8ccff;text-shadow:0 0 .6em #5b8cff}
+.vinyl{position:absolute;right:2.2em;top:2.4em;width:8em;height:8em;border-radius:50%;background:repeating-radial-gradient(circle,#050a22 0 .14em,#14226b .14em .28em);box-shadow:0 0 1.6em rgba(80,120,255,.6);animation:spin 4s linear infinite}
+.vinyl::after{content:"";position:absolute;left:34%;top:34%;width:32%;height:32%;border-radius:50%;background:radial-gradient(circle,#050a22 0 12%,#cfe0ff 14%,#7fa0ff)}
+.strings{position:absolute;left:3em;right:3em;bottom:4.2em;display:flex;flex-direction:column;gap:.45em;opacity:.7}
+.strings i{display:block;height:var(--th,1px);background:linear-gradient(90deg,transparent,#cfe0ff 15%,#cfe0ff 85%,transparent);animation:vib var(--t) ease-in-out infinite alternate}
+@keyframes vib{from{transform:translateY(-.14em)}to{transform:translateY(.14em)}}
+
+/* ---------- HANA : laut, paus, kucing, midnight/windy/deep ---------- */
+.t-hana{background:linear-gradient(180deg,#0a1f44 0%,#0d3b7a 42%,#0a2a5c 70%,#04122e 100%);--ink:#e6f4ff;--glow:#7cc4ff;--panel:rgba(4,25,70,.58)}
+.rays{position:absolute;left:-20%;top:-12%;width:140%;height:85%;background:repeating-conic-gradient(from 195deg at 50% 0,rgba(190,230,255,.16) 0 5deg,transparent 5deg 13deg);-webkit-mask:linear-gradient(#000,transparent 88%);mask:linear-gradient(#000,transparent 88%);transform-origin:50% 0;animation:raysw 12s ease-in-out infinite alternate}
+@keyframes raysw{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+.wave{position:absolute;left:0;width:200%;height:8em;animation:wv var(--t,9s) linear infinite}
+.wave path{fill:var(--c)}
+.wave.w1{bottom:-.5em;--c:rgba(40,140,220,.5);--t:9s}
+.wave.w2{bottom:-1.6em;--c:rgba(12,70,150,.7);--t:13s;animation-direction:reverse}
+.wave.w3{bottom:-2.8em;--c:rgba(3,22,70,.92);--t:17s}
+.whale{position:absolute;left:0;top:var(--y);width:var(--w,16em);fill:var(--c,rgba(6,26,76,.82));stroke:rgba(140,200,255,.4);stroke-width:1;animation:swim var(--t,40s) linear var(--d,0s) infinite,bob 6s ease-in-out infinite alternate}
+.whale .eye{fill:#9ad0ff}
+.bird{position:absolute;left:0;top:var(--y);width:3em;fill:#2f6fe4;animation:swim var(--t) linear var(--d) infinite}
+.bird path{transform-origin:20px 12px;animation:wing .45s ease-in-out infinite alternate}
+@keyframes wing{from{transform:scaleY(1)}to{transform:scaleY(-.55)}}
+.wind{position:absolute;left:-30%;top:var(--y);width:var(--w);height:1.2em;border-top:.12em solid rgba(205,232,255,.55);border-radius:50%;animation:streak var(--t) linear var(--d) infinite}
+.bub{border-radius:50%;border:1px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.55),transparent 62%)}
+
+/* ---------- NURA : restoran, kue, coklat ---------- */
+.t-nura{background:linear-gradient(160deg,#3a2012,#6a4128 60%,#2b160c);--ink:#fff1e0;--glow:#e0a96d;--panel:rgba(50,25,10,.62)}
+.steam{border-radius:50%;width:2.6em;height:6.5em;background:radial-gradient(ellipse,rgba(255,255,255,.4),transparent 70%);filter:blur(.5em)}
+.chip{height:calc(var(--s)*.7);background:#3b1f10;border-radius:25%;box-shadow:0 0 .2em rgba(0,0,0,.6)}
+.em{top:var(--y);animation:floaty var(--t) ease-in-out var(--d) infinite;filter:drop-shadow(0 .2em .3em rgba(0,0,0,.6))}
+.sign{position:absolute;top:0;right:3em;z-index:2;transform-origin:50% 0;animation:swing 4s ease-in-out infinite alternate}
+.sign::before{content:"";position:absolute;left:12%;right:12%;top:0;height:1.6em;border-left:.12em solid #e7c9a0;border-right:.12em solid #e7c9a0;transform:skewX(0)}
+.sign b{display:block;margin-top:1.6em;padding:.4em 1em;font-family:var(--sc);font-weight:400;letter-spacing:.2em;font-size:1.1em;color:#f7e4c6;background:#5a3216;border:.18em solid #d3a874;border-radius:.3em;box-shadow:0 .4em .8em rgba(0,0,0,.5)}
+
+/* ---------- YARA : city light Jakarta malam ---------- */
+.t-yara{background:linear-gradient(180deg,#02030c,#07123a 60%,#0b1c55);--ink:#eaf0ff;--glow:#4a7bff;--panel:rgba(3,8,32,.62)}
+.win{top:var(--y);border-radius:20%;background:#ffd98a;box-shadow:0 0 .5em #ffd98a;animation:twinkle var(--t) ease-in-out var(--d) infinite}
+.trail{position:absolute;top:var(--y);left:-12em;height:.2em;width:var(--w);border-radius:1em;background:linear-gradient(90deg,transparent,#fff);box-shadow:0 0 .6em #fff;animation:streak var(--t) linear var(--d) infinite}
+.trail.rd{left:auto;right:-12em;background:linear-gradient(270deg,transparent,#ff4a4a);box-shadow:0 0 .6em #ff2020;animation-name:streakL}
+.neon{position:absolute;left:var(--x);top:var(--y);width:7em;height:1.3em;background:#2d5bff;filter:blur(.9em);animation:pulse 2.6s ease-in-out var(--d) infinite alternate}
+.plane{position:absolute;top:8%;left:0;width:.35em;height:.35em;border-radius:50%;background:#ff3030;box-shadow:0 0 .9em #ff3030;animation:swim 22s linear infinite,blinkA 1s steps(1) infinite}
+
+/* ---------- SILPI : kupu-kupu ungu ---------- */
+.t-silpi{background:radial-gradient(circle at 50% 30%,#2e0f5a,#12052e 60%,#05010f);--ink:#f5e9ff;--glow:#c084fc;--panel:rgba(30,8,60,.6)}
+.tint.violet{background:linear-gradient(180deg,rgba(80,20,150,.3),rgba(20,5,50,.35))}
+.bfly{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:calc(var(--s)*.78);animation:fly var(--t) ease-in-out var(--d) infinite;filter:drop-shadow(0 0 .5em #c084fc)}
+.bfly i{position:absolute;top:0;width:50%;height:100%;animation:flap .4s ease-in-out infinite alternate;
+  background:radial-gradient(circle at 70% 35%,#fff 0 5%,transparent 7%),radial-gradient(circle at 35% 72%,#f5d0fe 0 8%,transparent 10%),linear-gradient(140deg,#f0e0ff,#a855f7 50%,#5b21b6)}
+.bfly i.l{left:0;border-radius:88% 12% 60% 40%/72% 22% 78% 28%;transform-origin:100% 50%}
+.bfly i.r{right:0;border-radius:12% 88% 40% 60%/22% 72% 28% 78%;transform-origin:0 50%;transform:scaleX(1)}
+.bfly::after{content:"";position:absolute;left:calc(50% - .1em);top:8%;width:.2em;height:84%;background:#2a0b4d;border-radius:1em}
+@keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.16)}}
+@keyframes fly{0%,100%{transform:translate(0,0) rotate(-8deg)}25%{transform:translate(var(--ax),var(--ay)) rotate(10deg)}50%{transform:translate(var(--bx),var(--by)) rotate(-6deg)}75%{transform:translate(var(--cx),var(--cy)) rotate(12deg)}}
+.spark{top:var(--y);background:#f5d0fe;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 .3em #e9b3ff);animation:twinkle var(--t) ease-in-out var(--d) infinite}
+.orb{border-radius:50%;background:radial-gradient(circle,rgba(220,170,255,.9),transparent 70%)}
+
+/* ---------- JEJE : laut, paus, biru (pusaran hiu) ---------- */
+.t-jeje{background:radial-gradient(circle at 50% 50%,#0a4a8a,#05204a 50%,#010a1e);--ink:#e2f2ff;--glow:#38bdf8;--panel:rgba(2,16,50,.62)}
+.bgimg.vortex{inset:-32%;animation:spin 110s linear infinite}
+.bgimg.vortex.blur{inset:-40%;animation:spin 150s linear infinite reverse}
+.glowc{position:absolute;left:50%;top:50%;width:26em;height:26em;margin:-13em;border-radius:50%;background:radial-gradient(circle,rgba(120,210,255,.5),transparent 62%);animation:pulse 5s ease-in-out infinite alternate}
+.plank{top:var(--y);border-radius:50%;background:rgba(190,235,255,.85);box-shadow:0 0 .4em #8fd8ff;animation:twinkle var(--t) ease-in-out var(--d) infinite,drift 12s ease-in-out var(--d) infinite alternate}
+
+/* ---------- daftar isi 2 kolom ---------- */
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:.55em .6em;flex:none;margin-top:1.2em;align-content:start}
+.toc li{font-size:1em;padding:.55em .7em;letter-spacing:.04em;gap:.4em}
+/* ===== bilah navigasi ===== */
+.bar{position:fixed;left:50%;bottom:1.2vh;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:10px;padding:6px 14px;border-radius:30px;
+  background:linear-gradient(#4a2a12,#2a1608);border:1px solid #b8894a;box-shadow:0 6px 18px rgba(0,0,0,.7),inset 0 0 8px rgba(0,0,0,.6);font-family:var(--serif)}
+.bar button{font-family:var(--serif);font-size:14px;color:#f0d9a0;background:transparent;border:1px solid rgba(212,168,96,.5);border-radius:20px;padding:4px 14px;cursor:pointer;transition:.2s}
+.bar button:hover:not(:disabled){background:rgba(212,168,96,.25)}
+.bar button:disabled{opacity:.3;cursor:default}
+.bar span{color:#d4b878;font-size:13px;font-style:italic;min-width:110px;text-align:center}
+
+/* ===== lightbox & petunjuk ===== */
+#lb{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img,#lb video{max-width:92vw;max-height:90vh;box-shadow:0 0 40px #000;border:8px solid #fdfbf5}
+.rot{position:fixed;inset:0;z-index:2000;background:#1a0d05;color:#f0d9a0;display:none;align-items:center;justify-content:center;text-align:center;padding:2em;font-size:18px;line-height:1.6}
+@media (max-aspect-ratio:1/1) and (max-width:700px){.rot{display:flex}}
+
+/* ===== gambar latar (folder images/) ===== */
+.i-hana{background-image:url("images/hana.jpg");background-position:50% 35%;}
+.i-jeje{background-image:url("images/jeje.jpg");}
+.i-dzio{background-image:url("images/dzio.jpg");}
+.i-faris{background-image:url("images/faris.jpg");}
+.i-faris2{background-image:url("images/faris2.jpg");}
+.i-radit{background-image:url("images/radit.jpg");}
+.i-rama{background-image:url("images/rama.jpg");background-position:50% 18%;}
+.i-abi{background-image:url("images/abi.jpg");}
+.i-nura{background-image:url("images/nura.jpg");}
+.i-yara{background-image:url("images/yara.jpg");}
+.i-silpi{background-image:url("images/silpi.jpg");}
+.i-hanabg{background-image:url("images/hanabg.jpg");}
+.i-hanabg2{background-image:url("images/hanabg2.jpg");}
+
+/* =====================================================================
+   FITUR BARU
+   ===================================================================== */
+
+/* ---------- bilah navigasi tambahan + toast ---------- */
+.bar button.add{border-color:#d4a860;background:rgba(212,168,96,.18)}
+#toast{position:fixed;left:50%;bottom:64px;transform:translateX(-50%) translateY(20px);z-index:1200;max-width:90vw;padding:.55em 1.2em;border-radius:2em;
+  background:rgba(30,15,5,.92);color:#f0d9a0;border:1px solid #b8894a;font-family:var(--serif);font-size:15px;opacity:0;pointer-events:none;transition:.35s}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- bingkai profil bulat (semua album kecuali Foto/Video Bersama) ---------- */
+.portrait{position:relative;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center;width:9.6em;height:9.6em;background-size:cover;background-position:50% 30%}
+.portrait::after{content:"📷 Ganti foto";position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:.85em;display:flex;align-items:center;justify-content:center;text-align:center;padding:1em;opacity:0;transition:.25s}
+.portrait:hover::after{opacity:1}
+.portrait.pf-gal{background:radial-gradient(circle at 35% 30%,#fff,#9a9a9a 40%,#1a1a1a 85%)}
+.portrait.pf-gal::before{content:attr(data-ini);font-family:var(--sc);font-size:3.6em;color:#111;text-shadow:0 0 .4em #fff}
+
+/* ---------- HANA: foto paus & hiu bergerak ---------- */
+@keyframes swimimg{from{transform:scale(1.1) translate(1%,3%) rotate(-1.2deg)}to{transform:scale(1.24) translate(-2%,-5%) rotate(1.6deg)}}
+.bgimg.swim{inset:-6%;animation:swimimg 15s ease-in-out infinite alternate}
+.bgimg.wob{filter:url(#wobble)}
+.face:not(.live) .bgimg.wob{filter:none}
+.t-hana .bgimg.vortex{animation-duration:75s}
+.t-hana .wave{height:5em;opacity:.75}
+.school{position:absolute;left:0;top:var(--y);width:5.5em;fill:rgba(3,28,78,.6);animation:swim var(--t) linear var(--d) infinite,bob 4s ease-in-out infinite alternate}
+.orbit{position:absolute;left:50%;top:50%;width:0;height:0;animation:spin var(--t) linear var(--d) infinite}
+.orbit.rev{animation-direction:reverse}
+.orbit .sk{position:absolute;left:var(--r);top:calc(var(--sz)*-.2);width:var(--sz);fill:rgba(2,16,56,.9);transform:rotate(90deg);animation:skwob 1.4s ease-in-out infinite alternate;filter:drop-shadow(0 0 .4em rgba(120,200,255,.35))}
+.orbit.rev .sk{transform:rotate(-90deg)}
+@keyframes skwob{from{rotate:-5deg}to{rotate:5deg}}
+
+/* ---------- POP-UP BOOK: Foto & Video Bersama ---------- */
+.pop{--ink:#4a2f1a;--glow:#b8894a}
+.pop.vid{background:radial-gradient(circle at 20% 15%,rgba(120,70,25,.3),transparent 40%),var(--noise),linear-gradient(135deg,#d8c08a,#bda46a 55%,#9c8450)}
+.pbord{position:absolute;inset:1.1em;border:1px solid rgba(110,70,30,.55);box-shadow:inset 0 0 0 .38em rgba(110,70,30,.14);pointer-events:none;z-index:1}
+.pop .ttl{font-size:2.9em;border:0;letter-spacing:.14em;color:#5a3216;text-shadow:1px 1px 0 #e6cf9a,0 .1em .3em rgba(60,30,10,.3)}
+.pop .stamp,.pop .cap,.pop .pn,.pop .mini{color:#6b3f1d;text-shadow:none}
+.pop .orn{color:#8b5a2b;margin:.3em 0}
+.pop .mini{font-size:1.35em;margin-top:1em}
+.note{background:#f6ecd2;border:1px solid #c7ab72;padding:.8em 1.1em;font-size:1.3em;line-height:1.4;text-align:center;box-shadow:.15em .25em .6em rgba(60,30,10,.35);rotate:-1deg;position:relative;color:#4a2f1a;margin-top:.5em}
+.note::before{content:"";position:absolute;top:-.7em;left:50%;width:4em;height:1.2em;transform:translateX(-50%) rotate(2deg);background:linear-gradient(135deg,rgba(230,210,160,.9),rgba(200,170,110,.9));box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bunting{position:absolute;left:0;top:0;width:100%;height:5.6em;z-index:4;transform-origin:50% 0;animation:sway 5s ease-in-out infinite alternate;filter:drop-shadow(0 .2em .15em rgba(40,20,5,.4));pointer-events:none}
+@keyframes sway{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+.dust{border-radius:50%;background:rgba(255,232,170,.85);box-shadow:0 0 .4em rgba(255,220,140,.8)}
+.popfig{width:10em;margin-top:.7em;overflow:visible;filter:drop-shadow(0 .6em .5em rgba(40,20,5,.5));animation:floaty 5s ease-in-out infinite}
+.popfig .reel{transform-box:fill-box;transform-origin:center;animation:spin 3s linear infinite}
+.popfig .reel.b{animation-duration:2.2s;animation-direction:reverse}
+.popfig .beam{animation:flick .25s steps(2) infinite}
+.popfig .flash{animation:flashb 4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes flashb{0%,86%{opacity:0;transform:scale(.3)}90%{opacity:1;transform:scale(1.6)}100%{opacity:0;transform:scale(2)}}
+@keyframes flick{0%{opacity:.5}50%{opacity:1}}
+.pop .sprock{opacity:.55;background:repeating-linear-gradient(180deg,#5a3a1a 0 .9em,transparent .9em 1.8em)}
+
+.pop .grid{perspective:1100px;gap:1.7em 1.2em;padding:.8em .5em 1.6em}
+.pop-card{--r:0deg;rotate:var(--r);transform-origin:50% 100%;padding:.5em .5em 1.9em;background:#f6ecd2;border:1px solid #bfa365;border-radius:.15em;
+  box-shadow:0 .2em .1em rgba(60,30,10,.3);filter:drop-shadow(0 .9em .7em rgba(50,25,8,.45));transition:translate .3s,scale .3s}
+.pop-card:nth-child(1){--r:-1.8deg;transform:none}.pop-card:nth-child(2){--r:1.5deg;transform:none}
+.pop-card:nth-child(3){--r:1.2deg;transform:none}.pop-card:nth-child(4){--r:-1.4deg;transform:none}
+.pop-card::before{display:none}
+.pop-card:hover{translate:0 -.35em;scale:1.03;transform:none;box-shadow:0 .2em .1em rgba(60,30,10,.3)}
+.pop-card .hinge{position:absolute;left:-.2em;right:-.2em;bottom:-.8em;height:.8em;background:linear-gradient(#b99b60,#8f7342);box-shadow:0 .3em .5em rgba(40,20,5,.45)}
+.pop-card .fold{position:absolute;bottom:-1.9em;width:36%;height:1.1em;background:linear-gradient(#d6bd85,#a98b52);clip-path:polygon(8% 0,92% 0,100% 100%,0 100%)}
+.pop-card .fold.fl{left:6%}.pop-card .fold.fr{right:6%}
+.pop-card .photo-img{background:linear-gradient(135deg,#8b7355,#6b5540 50%,#4a3828)}
+.pop-card .photo-img[data-type="video"]::after{content:"▶";position:absolute;right:.4em;bottom:.3em;z-index:4;color:#fff;font-size:1.3em;text-shadow:0 0 .4em #000}
+.face.show .pop-card{animation:popup .95s cubic-bezier(.2,1.35,.4,1) both;animation-delay:calc(var(--i)*.13s + .25s)}
+@keyframes popup{0%{transform:rotateX(86deg) translateY(35%) scale(.92);opacity:0}55%{opacity:1}100%{transform:rotateX(0) translateY(0) scale(1);opacity:1}}
+.pwr{position:absolute;left:.3em;top:.3em;width:2.1em;height:2.1em;border-radius:50%;border:.15em solid #8b5a2b;background:radial-gradient(circle at 35% 30%,#fff3c4,#c9a24e 60%,#7a5520);color:#5a3216;font-size:.85em;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:6;box-shadow:0 .15em .3em rgba(0,0,0,.4)}
+.photo-card.has-media .pwr{display:flex}
+.pwr.on{background:radial-gradient(circle at 35% 30%,#fff,#ffd27a 55%,#e08a1e);box-shadow:0 0 1em #ffb347,0 0 2em rgba(255,170,60,.7);animation:pulse 1.2s ease-in-out infinite alternate}
+
+/* ---------- HOLOGRAM di atas buku ---------- */
+#holo{position:fixed;inset:0;z-index:900;pointer-events:none}
+#holo[hidden]{display:none}
+#holo .hb{position:absolute;inset:0;background:linear-gradient(to top,rgba(255,196,96,.6),rgba(255,196,96,.06));mix-blend-mode:screen;animation:hbeam 2.2s ease-in-out infinite alternate}
+@keyframes hbeam{from{opacity:.55}to{opacity:1}}
+#holo .hbase{position:absolute;left:var(--cx);top:var(--cy);width:90px;height:26px;margin:-13px 0 0 -45px;border-radius:50%;border:2px solid rgba(255,206,120,.95);box-shadow:0 0 18px #ffb347,inset 0 0 14px rgba(255,190,90,.8);animation:hring 1.4s ease-out infinite}
+@keyframes hring{from{transform:scale(.5);opacity:1}to{transform:scale(1.5);opacity:0}}
+#holo .hs{position:absolute;left:var(--hx);top:var(--hy);width:var(--hw);height:var(--hh);pointer-events:auto;cursor:pointer;transform-origin:50% 100%;
+  animation:holoin .9s cubic-bezier(.2,1.2,.3,1) both,hbob 5s ease-in-out .9s infinite alternate,hflick 5s steps(1) infinite}
+@keyframes holoin{from{transform:perspective(1000px) rotateX(70deg) scale(.1);opacity:0}to{transform:perspective(1000px) rotateX(7deg) scale(1);opacity:1}}
+@keyframes hbob{from{translate:0 -6px}to{translate:0 8px}}
+@keyframes hflick{0%,92%,96%{opacity:1}94%{opacity:.55}98%{opacity:.8}}
+#holo .hm{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(255,214,140,.9);background:rgba(50,28,6,.4);box-shadow:0 0 36px rgba(255,176,70,.7),inset 0 0 40px rgba(255,176,70,.35)}
+#holo .hm img,#holo .hm video{width:100%;height:100%;object-fit:contain;display:block;filter:sepia(.6) saturate(1.9) hue-rotate(-10deg) brightness(1.25) contrast(1.1);opacity:.92;mix-blend-mode:screen}
+#holo .hscan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,220,150,.14) 0 1px,transparent 1px 3px);pointer-events:none}
+#holo .hline{position:absolute;left:0;right:0;height:14%;background:linear-gradient(to bottom,transparent,rgba(255,226,170,.35),transparent);animation:hsweep 2.6s linear infinite;pointer-events:none}
+@keyframes hsweep{from{top:-14%}to{top:100%}}
+#holo .hs::before,#holo .hs::after{content:"";position:absolute;width:26px;height:26px;border:2px solid #ffd9a0;pointer-events:none;z-index:2}
+#holo .hs::before{left:-6px;top:-6px;border-right:0;border-bottom:0}
+#holo .hs::after{right:-6px;bottom:-6px;border-left:0;border-top:0}
+#holo .hcap{position:absolute;left:0;right:0;bottom:-34px;text-align:center;font-family:var(--sc);letter-spacing:.2em;color:#ffd9a0;text-shadow:0 0 12px #ffb347;font-size:15px}
+#holo .hx{position:absolute;right:-12px;top:-14px;width:30px;height:30px;border-radius:50%;border:1px solid #ffd9a0;background:rgba(40,20,0,.85);color:#ffd9a0;cursor:pointer;z-index:3;font-size:14px}
+
+/* ---------- strip film (halaman Video Bersama) ---------- */
+.pop .sprock{position:absolute;top:0;bottom:0;width:.8em;z-index:2;animation:sprock 1.2s linear infinite}
+.pop .sprock.a{left:.15em}.pop .sprock.b{right:.15em}
+@keyframes sprock{to{background-position:0 1.8em}}
+
+/* ---------- Hana: veil lebih gelap di atas supaya teks terbaca ---------- */
+.t-hana .veil{background:linear-gradient(180deg,rgba(0,20,60,.55),rgba(0,10,40,.12) 40%,rgba(0,10,40,.6))}
